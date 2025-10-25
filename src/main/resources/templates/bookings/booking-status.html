@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Booking Status Management</title>
+</head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+<h1>Booking Status Management</h1>
+
+<form th:action="@{/booking-status/save}" th:object="${status}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <input type="text" th:field="*{name}" placeholder="Enter status"/>
+    <button type="submit">Save</button>
+</form>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="s : ${statuses}">
+        <td th:text="${s.id}"></td>
+        <td th:text="${s.name}"></td>
+        <td>
+            <a th:href="@{'/booking-status/edit/' + ${s.id}}">Edit</a> |
+            <a th:href="@{'/booking-status/delete/' + ${s.id}}">Delete</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

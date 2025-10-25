@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить бронирование</title>
+</head>
+<body>
+
+<h1>Добавить бронирование</h1>
+
+<!-- Сообщения об успехе или ошибке -->
+<div th:if="${message}" style="color: green;" th:text="${message}"></div>
+<div th:if="${error}" style="color: red;" th:text="${error}"></div>
+
+<form th:action="@{/bookings/proc-create}" th:object="${booking}" method="post">
+    <label>Номер комнаты (ID):</label><br>
+    <input type="number" th:field="*{room.roomId}" required><br><br>
+
+    <label>Дата заезда:</label><br>
+    <input type="date" th:field="*{checkIn}" required><br><br>
+
+    <label>Дата выезда:</label><br>
+    <input type="date" th:field="*{checkOut}" required><br><br>
+
+    <button type="submit">Забронировать</button>
+</form>
+
+</body>
+</html>

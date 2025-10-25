@@ -1,0 +1,27 @@
+<div th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+    <div class="header" style="background-color: #f8f9fa; border-bottom: 1px solid #ddd; padding: 10px 20px;">
+        <div class="header_block" style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto;">
+            <a href="/" class="icon" style="display: flex; align-items: center; text-decoration: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="32" viewBox="0 0 118 94" role="img">
+                    <title>Bootstrap</title>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M..." fill="currentColor"></path>
+                </svg>
+                <span class="fs-4" style="font-size: 24px; margin-left: 1px; font-weight: bold; color: #000;">Name</span>
+            </a>
+
+            <nav class="table_header" style="display: flex; gap: 20px;">
+                <a class="menu_item" href="/" style="text-decoration: none; color: #333; font-size: 16px;">Главная</a>
+                <a class="menu_item" href="/rooms/add" style="text-decoration: none; color: #333; font-size: 16px;">Комнаты</a>
+                <a class="menu_item" href="/rooms" style="text-decoration: none; color: #333; font-size: 16px;">Список</a>
+                <a class="menu_item" href="/views" style="text-decoration: none; color: #333; font-size: 16px;">Виды окна</a>
+                <a class="menu_item" href="/amenities" style="text-decoration: none; color: #333; font-size: 16px;">Удобства</a>
+                <a class="menu_item" href="/hotels" style="text-decoration: none; color: #333; font-size: 16px;">Отель</a>
+                <a class="menu_item" href="/bookings" style="text-decoration: none; color: #333; font-size: 16px;">Броны</a>
+                <a class="menu_item" href="/customers" style="text-decoration: none; color: #333; font-size: 16px;">Клиенты</a>
+                <a class="menu_item" href="/payments" style="text-decoration: none; color: #333; font-size: 16px;">Оплаты</a>
+                <a class="menu_item" href="/booking-status" style="text-decoration: none; color: #333; font-size: 16px;">Статус брона</a>
+                <a class="menu_item" href="/room-status" style="text-decoration: none; color: #333; font-size: 16px;">Статус комнаты</a>
+            </nav>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Customers</title></head>
+<body>
+<h1>Customers</h1>
+<header th:insert="~{block/header :: header}"></header>
+<a th:href="@{/customers/add}">Add Customer</a>
+<ul th:if="${customers != null}">
+    <li th:each="c : ${customers}">
+        <a th:href="@{/customers/{id}(id=${c.customerId})}" th:text="${c?.fullName ?: 'Имя не указано'}"></a>
+    </li>
+</ul>
+<p th:if="${#lists.isEmpty(customers)}">Клиенты не найдены.</p>
+</body>
+</html>

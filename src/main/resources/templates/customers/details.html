@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Details</title>
+</head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+
+<h1 th:text="${customer?.fullName ?: 'Клиент не найден'}"></h1>
+<p>Email: <span th:text="${customer?.email ?: 'Не указан'}"></span></p>
+<p>Phone: <span th:text="${customer?.phone ?: 'Не указан'}"></span></p>
+
+<h3>Bookings:</h3>
+<ul th:if="${customer?.bookings != null}">
+    <li th:each="b : ${customer.bookings}">
+        <a th:href="@{/bookings/{id}(id=${b.bookingId})}"
+           th:text="|${b.room?.roomNumber ?: 'Комната ?'} ${b.checkIn} - ${b.checkOut}|"></a>
+    </li>
+</ul>
+<p th:if="${customer == null or #lists.isEmpty(customer.bookings)}">
+    Бронирований нет.
+</p>
+
+<a th:if="${customer != null}" th:href="@{/customers/delete/{id}(id=${customer.customerId})}">Delete</a>
+</body>
+</html>

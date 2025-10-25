@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Room Status Management</title>
+</head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+<h1>Room Status Management</h1>
+
+<form th:action="@{/room-status/save}" th:object="${status}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <input type="text" th:field="*{name}" placeholder="Enter room status"/>
+    <button type="submit">Save</button>
+</form>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="s : ${statuses}">
+        <td th:text="${s.id}"></td>
+        <td th:text="${s.name}"></td>
+        <td>
+            <a th:href="@{'/room-status/edit/' + ${s.id}}">Edit</a> |
+            <a th:href="@{'/room-status/delete/' + ${s.id}}">Delete</a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

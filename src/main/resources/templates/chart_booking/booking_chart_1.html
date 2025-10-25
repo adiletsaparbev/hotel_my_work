@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns="">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'Шахматка для отеля: ' + ${hotel?.name}">Шахматка</title>
+  <link rel="stylesheet" th:href="@{/css/chart_booking_1.css}">
+</head>
+<body>
+
+<h1 th:text="'Шахматка для отеля: ' + ${hotel?.name}">Шахматка</h1>
+
+<div class="nav">
+  <p>
+    Отображается <b th:text="${days}">30</b> дней, начиная с
+    <b th:text="${#temporals.format(startDate, 'dd.MM.yyyy')}"></b>
+  </p>
+
+  <div>
+    <a class="btn" th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate}, days=30)}">30 дней</a>
+    <a class="btn" th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate}, days=45)}">45 дней</a>
+    <a class="btn" th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate}, days=90)}">90 дней</a>
+  </div>
+  <div style="margin-top: 6px;">
+    <a class="btn" th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate.minusDays(days)}, days=${days})}">⬅ Предыдущие</a>
+    <a class="btn" th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate.plusDays(days)}, days=${days})}">Следующие ➡</a>
+  </div>
+</div>
+
+<div class="table-inner"> <table>
+  <thead>
+  <tr>
+    <th class="room-header">Номер</th>
+    <th th:each="mh : ${monthHeaders}"
+        th:attr="colspan=${mh.span}"
+        class="month-header"
+        th:text="${mh.name}">Месяц</th>
+  </tr>
+  <tr>
+    <th class="room-header"></th>
+    <th th:each="date : ${dateRange}"
+        th:classappend="(${date.equals(T(java.time.LocalDate).now())}) ? ' today' :
+                            (${#temporals.dayOfWeek(date) == 7 || #temporals.dayOfWeek(date) == 6} ? ' sunday' : '')">
+      <div class="day-name" th:text="${#temporals.format(date, 'E')}">Пн</div>
+      <div class="day-num" th:text="${#temporals.day(date)}">1</div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="room, roomStat : ${rooms}">
+    <td class="room-header" th:text="${room.roomNumber}">101</td>
+    <td th:each="date : ${dateRange}"
+        class="day-grid-cell"
+        th:classappend="(${date.equals(T(java.time.LocalDate).now())}) ? ' today' :
+                              (${#temporals.dayOfWeek(date) == 7 || #temporals.dayOfWeek(date) == 6} ? ' sunday' : '')">
+    </td>
+  </tr>
+  <div class="bars-overlay" th:if="${bookings != null}">
+    <div th:each="booking : ${bookings}">
+      <th:block th:if="${booking?.room != null && booking.checkIn != null && booking.checkOut != null}" th:with="
+            viewStartDate=${dateRange[0]},
+            viewEndDate=${dateRange[#lists.size(dateRange) - 1]},
+            bookingVisibleStart=${booking.checkIn.isAfter(viewStartDate) ? booking.checkIn : viewStartDate},
+            bookingVisibleEnd=${booking.checkOut.isBefore(viewEndDate.plusDays(1)) ? booking.checkOut : viewEndDate.plusDays(1)},
+            durationDays=${T(java.time.temporal.ChronoUnit).DAYS.between(bookingVisibleStart, bookingVisibleEnd)},
+            startDayOffset=${T(java.time.temporal.ChronoUnit).DAYS.between(viewStartDate, bookingVisibleStart)},
+            rowIndex=${rooms.indexOf(booking.room)}
+        ">
+        <a th:if="${durationDays > 0 && rowIndex >= 0}"
+           th:href="@{/booking-details/{id}(id=${booking.bookingId})}"
+           class="booking-link">
+          <div class="booking-bar"
+               th:classappend="${booking.status != null ? #strings.toLowerCase(booking.status.name) : 'unknown'}"
+               th:title="${'Гость: ' + (booking.customer?.fullName ?: 'Неизвестный') + '. Даты: ' +
+                            #temporals.format(booking.checkIn, 'dd.MM.yy') + ' - ' +
+                            #temporals.format(booking.checkOut, 'dd.MM.yy')}"
+
+               th:style="'left: calc(var(--room-column-width) + var(--cell-width) * (' + ${startDayOffset} + ') + 22.5px); ' +
+                           'top: calc(var(--header-height) + var(--row-height) * ' + ${rowIndex} + ' + 8px); ' +
+                           'width: calc(var(--cell-width) * ' + ${durationDays} + ');'">
+            <span th:text="${booking.customer?.fullName ?: '...'}"></span>
+          </div>
+        </a>
+      </th:block>
+    </div>
+  </div>
+  </tbody>
+</table>
+</div>
+</body>
+</html>

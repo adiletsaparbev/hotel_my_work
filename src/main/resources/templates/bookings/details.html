@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"></head>
+<body class="container py-4">
+
+<header th:insert="~{block/header :: header}"></header>
+
+<div th:if="${booking != null}">
+
+    <h1 class="mb-4">Детали бронирования</h1>
+
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            Клиент
+        </div>
+        <div class="card-body">
+            <p th:if="${booking.customer != null}"><b>ФИО:</b> <span th:text="${booking.customer.fullName}"></span></p>
+            <p th:if="${booking.customer != null}"><b>Email:</b> <span th:text="${booking.customer.email} ?: 'Не указан'"></span></p>
+            <p th:if="${booking.customer != null}"><b>Телефон:</b> <span th:text="${booking.customer.phone} ?: 'Не указан'"></span></p>
+            <p th:if="${booking.customer == null}" class="text-muted">Информация о клиенте отсутствует.</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">
+            Комната
+        </div>
+        <div class="card-body">
+            <p th:if="${booking.room != null}"><b>Номер комнаты:</b> <span th:text="${booking.room.roomNumber}"></span></p>
+            <p th:if="${booking.room != null}"><b>Этаж:</b> <span th:text="${booking.room.floor}"></span></p>
+            <p th:if="${booking.room != null}"><b>Вместимость:</b> <span th:text="${booking.room.capacity}"></span></p>
+            <p th:if="${booking.room != null}"><b>Цена за ночь:</b> <span th:text="${booking.room.priceNight}"></span> сом</p>
+            <p th:if="${booking.room != null && booking.room.amenities != null && !booking.room.amenities.isEmpty()}">
+                <b>Удобства:</b>
+                <span th:each="a : ${booking.room.amenities}" class="badge bg-info text-dark me-1" th:text="${a.name}"></span>
+            </p>
+            <p th:if="${booking.room != null && (booking.room.amenities == null || booking.room.amenities.isEmpty())}" class="text-muted">
+                Удобства не указаны.
+            </p>
+            <p th:if="${booking.room == null}" class="text-muted">Информация о комнате отсутствует.</p>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header bg-warning text-dark">
+            Бронирование
+        </div>
+        <div class="card-body">
+            <p><b>Дата заезда:</b> <span th:text="${booking.checkIn} ?: 'Не указана'"></span></p>
+            <p><b>Дата выезда:</b> <span th:text="${booking.checkOut} ?: 'Не указана'"></span></p>
+            <p><b>Статус оплаты:</b> <span th:text="${booking.status?.name} ?: 'Не указан'"></span></p>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <button id="editButton" class="btn btn-warning">Редактировать бронирование</button>
+    </div>
+
+    <div id="editBlock" style="display: none;">
+        <div class="card mb-3 border-primary">
+            <div class="card-header bg-light text-dark">
+                Редактировать бронирование
+            </div>
+            <div class="card-body">
+                <form th:action="@{|/bookings/update/${booking.bookingId}|}" method="post">
+
+                    <div class="mb-3">
+                        <label>Клиент</label>
+                        <select name="customerId" class="form-select">
+                            <option th:each="c : ${customers}"
+                                    th:value="${c.customerId}"
+                                    th:text="${c.fullName}"
+                                    th:selected="${booking.customer != null and c.customerId == booking.customer.customerId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Комната</label>
+                        <select name="roomId" class="form-select">
+                            <option th:each="room : ${rooms}"
+                                    th:value="${room.roomId}"
+                                    th:text="'Комната №' + ${room.roomNumber}"
+                                    th:selected="${booking.room != null and room.roomId == booking.room.roomId}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Дата заезда</label>
+                        <input type="date" name="checkIn" class="form-control" th:value="${booking.checkIn}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Дата выезда</label>
+                        <input type="date" name="checkOut" class="form-control" th:value="${booking.checkOut}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Статус оплаты</label>
+                        <select name="status" class="form-select">
+                            <option value="PENDING" th:selected="${booking.status == 'PENDING'}">PENDING</option>
+                            <option value="CONFIRMED" th:selected="${booking.status == 'CONFIRMED'}">CONFIRMED</option>
+                            <option value="CANCELLED" th:selected="${booking.status == 'CANCELLED'}">CANCELLED</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mb-4">
+        <a th:href="@{/bookings/delete/{id}(id=${booking.bookingId})}" class="btn btn-danger">Удалить</a>
+        <a th:href="@{/bookings}" class="btn btn-secondary">К списку бронирований</a>
+        <a th:href="@{/bookings/add}" class="btn btn-primary">Добавить новое бронирование</a>
+    </div>
+
+</div> <div th:if="${booking == null}">
+    <h1 class="mb-4">Ошибка</h1>
+    <p class="alert alert-danger">Бронирование не найдено.</p>
+    <a th:href="@{/bookings}" class="btn btn-secondary">К списку бронирований</a>
+</div>
+
+<script>
+    const editButton = document.getElementById('editButton');
+    const editBlock = document.getElementById('editBlock');
+
+    // Добавляем проверку, что кнопки существуют (на случай, если booking == null)
+    if (editButton && editBlock) {
+        editButton.addEventListener('click', () => {
+            if (editBlock.style.display === 'none') {
+                editBlock.style.display = 'block';
+                editButton.textContent = 'Скрыть редактирование';
+            } else {
+                editBlock.style.display = 'none';
+                editButton.textContent = 'Редактировать бронирование';
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Bookings</title></head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+<h1>Bookings</h1>
+
+<a th:href="@{/bookings/add}">Add Booking</a>
+<ul th:if="${bookings != null}">
+    <li th:each="b : ${bookings}">
+        <a th:href="@{/bookings/{id}(id=${b.bookingId})}"
+           th:text="${(b.customer?.fullName ?: 'Без клиента') + ' - ' + (b.room?.roomNumber ?: 'Комната не указана')}"></a>
+    </li>
+</ul>
+<p th:if="${#lists.isEmpty(bookings)}">Бронирований не найдено.</p>
+</body>
+</html>

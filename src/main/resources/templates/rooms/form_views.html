@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Удобства</title>
+    <link rel="stylesheet" th:href="@{/css/form_amenities.css}" />
+</head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+
+<h2>Список Вид</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Действия</th>
+    </tr>
+    <tr th:each="view : ${views}">
+        <td th:text="${view.viewId}"></td>
+        <td th:text="${view.name}"></td>
+        <td class="actions">
+            <a th:href="@{/views/edit/{id}(id=${view.viewId})}" class="edit-btn">✏ Изменить</a>
+            <a th:href="@{/views/delete/{id}(id=${view.viewId})}" class="delete-btn">🗑 Удалить</a>
+        </td>
+    </tr>
+</table>
+
+<h3 th:text="${view != null and view.viewId != null ? 'Редактирование вид' : 'Добавление нового вид'}"></h3>
+
+<form th:action="@{/views/save}" th:object="${view}" method="post">
+    <input type="hidden" th:field="*{viewId}"/>
+    <label>Название:</label>
+    <input type="text" th:field="*{name}" placeholder="Введите название Вида" required/>
+    <button type="submit">💾 Сохранить</button>
+</form>
+
+</body>
+</html>

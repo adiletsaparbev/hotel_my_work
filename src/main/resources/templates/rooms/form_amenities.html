@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Удобства</title>
+    <link rel="stylesheet" th:href="@{/css/form_amenities.css}" />
+</head>
+<body>
+<header th:insert="~{block/header :: header}"></header>
+
+<h2>Список удобств</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Действия</th>
+    </tr>
+    <tr th:each="amenity : ${amenities}">
+        <td th:text="${amenity.amenityId}"></td>
+        <td th:text="${amenity.name}"></td>
+        <td class="actions">
+            <a th:href="@{/amenities/edit/{id}(id=${amenity.amenityId})}" class="edit-btn">✏ Изменить</a>
+            <a th:href="@{/amenities/delete/{id}(id=${amenity.amenityId})}" class="delete-btn">🗑 Удалить</a>
+        </td>
+    </tr>
+</table>
+
+<h3 th:text="${amenity != null and amenity.amenityId != null ? 'Редактирование удобства' : 'Добавление нового удобства'}"></h3>
+
+<form th:action="@{/amenities/save}" th:object="${amenity}" method="post">
+    <input type="hidden" th:field="*{amenityId}"/>
+    <label>Название:</label>
+    <input type="text" th:field="*{name}" placeholder="Введите название удобства" required/>
+    <button type="submit">💾 Сохранить</button>
+</form>
+
+</body>
+</html>

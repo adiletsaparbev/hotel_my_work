@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Шахматка бронирований</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/booking-chart_0.css}">
+</head>
+<body>
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate.minusDays(days)}, days=${days})}" class="btn btn-outline-primary">&lt; Назад</a>
+        <h2 class="text-center mb-0">Шахматка бронирований</h2>
+        <a th:href="@{/booking-chart/{hotelId}(hotelId=${hotel.hotelId}, startDate=${startDate.plusDays(days)}, days=${days})}" class="btn btn-outline-primary">Вперед &gt;</a>
+    </div>
+
+    <div class="booking-chart-container">
+        <table class="booking-chart">
+            <thead>
+            <tr>
+                <th rowspan="2" class="room-header-cell">Номер</th>
+                <th th:each="header : ${monthHeaders}" th:attr="colspan=${header.span}" th:text="${header.name}" class="month-header"></th>
+            </tr>
+            <tr>
+                <th th:each="date : ${dateRange}"
+                    th:text="${#temporals.format(date, 'dd')}"
+                    th:classappend="${date.equals(T(java.time.LocalDate).now()) ? 'today' : ''}"
+                    class="day-header">
+                </th>
+            </tr>
+            </thead>
+           <tbody>
+<tr th:each="room : ${rooms}">
+    <td class="room-header" th:text="${room.roomNumber}">101</td>
+
+    <!-- Основная ячейка на всю ширину диапазона -->
+    <td th:attr="colspan=${#lists.size(dateRange)}" class="position-relative p-0">
+
+        <!-- Сетка дней (фон) -->
+        <div class="d-flex w-100 h-100">
+            <div th:each="date : ${dateRange}"
+                 class="day-grid-cell flex-grow-1"
+                 th:classappend="${date.equals(T(java.time.LocalDate).now()) ? ' today' : ''}">
+            </div>
+        </div>
+
+        <!-- Слой с бронированиями -->
+        <div class="bars-container-cell">
+            <div th:each="booking : ${bookings}"
+                 th:if="${booking.room.roomId == room.roomId}">
+
+                <th:block th:with="
+                    viewStartDate=${dateRange[0]},
+                    viewEndDate=${dateRange[#lists.size(dateRange) - 1]},
+                    bookingVisibleStart=${booking.checkIn.isAfter(viewStartDate) ? booking.checkIn : viewStartDate},
+                    bookingVisibleEnd=${booking.checkOut.isBefore(viewEndDate.plusDays(1)) ? booking.checkOut : viewEndDate.plusDays(1)},
+                    durationDays=${T(java.time.temporal.ChronoUnit).DAYS.between(bookingVisibleStart, bookingVisibleEnd)},
+                    startDayOffset=${T(java.time.temporal.ChronoUnit).DAYS.between(viewStartDate, bookingVisibleStart)}">
+
+                    <div th:if="${durationDays > 0}">
+                        <a th:href="@{/booking-details/{id}(id=${booking.bookingId})}" class="booking-link">
+                            <div class="booking-bar"
+                                 th:classappend="${#strings.toLowerCase(booking.status.name)}"
+                                 th:title="${'Гость: ' + booking.customer.fullName + '. Даты: ' +
+                                            #temporals.format(booking.checkIn, 'dd.MM.yy') + ' - ' +
+                                            #temporals.format(booking.checkOut, 'dd.MM.yy')}"
+                                 th:style="'left: calc(var(--cell-width) * ' + ${startDayOffset} + '); width: calc(var(--cell-width) * ' + ${durationDays} + ');'">
+                                <span th:text="${booking.customer.fullName}"></span>
+                            </div>
+                        </a>
+                    </div>
+
+                </th:block>
+            </div>
+        </div>
+    </td>
+</tr>
+</tbody>
+
+        </table>
+    </div>
+</div>
+</body>
+</html>
